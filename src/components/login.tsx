@@ -1,9 +1,10 @@
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { Container } from "@mui/system";
 import axios from "axios";
-import React from "react";
+import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { LoginResponse } from "../api/types";
+import AuthContext from "../context/AuthProvider";
 
 const Login: React.FC = () => {
   let navigate = useNavigate();
@@ -13,11 +14,6 @@ const Login: React.FC = () => {
 
     const email = data.get("email");
     const password = data.get("password");
-
-    console.log({
-      email,
-      password,
-    });
 
     const loginResponse = await axios.post<LoginResponse>(
       "https://tools.dev.enmon.tech/api/auth/local",
