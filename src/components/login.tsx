@@ -4,7 +4,6 @@ import axios from "axios";
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { LoginResponse } from "../api/types";
-import AuthContext from "../context/AuthProvider";
 
 const Login: React.FC = () => {
   let navigate = useNavigate();
