@@ -7,7 +7,7 @@ export const Navbar: React.FC = () => {
 
   return (
     <Box display="flex" justifyContent="flex-end">
-      <NavLink to={"/"} style={{ textDecoration: "none" }}>
+      <NavLink to={"/login"} style={{ textDecoration: "none" }}>
         <Toolbar>
           <Button
             onClick={() => {

@@ -5,7 +5,7 @@ export const ProtectedRoute: React.FC = () => {
   const apiKey = localStorage.getItem("userInfo");
 
   if (!apiKey) {
-    return <Navigate to="/" />;
+    return <Navigate to="/login" />;
   }
 
   return <Outlet />;

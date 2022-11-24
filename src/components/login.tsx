@@ -24,7 +24,7 @@ const Login: React.FC = () => {
 
     localStorage.setItem("userInfo", JSON.stringify(loginResponse.data));
 
-    navigate("/dashboard");
+    navigate("/");
   };
 
   return (

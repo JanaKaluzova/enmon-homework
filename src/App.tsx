@@ -10,9 +10,9 @@ function App() {
     <Router>
       <Routes>
         <Route element={<ProtectedRoute />}>
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route index element={<Dashboard />} />
         </Route>
-        <Route index element={<Login />} />
+        <Route path="/login" element={<Login />} />
         <Route path="*" element={<NoMatchPage />} />
       </Routes>
     </Router>
