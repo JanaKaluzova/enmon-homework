@@ -1,26 +1,39 @@
-import { Box, Button, Toolbar } from "@mui/material";
+import { Box, Button, Toolbar, Typography } from "@mui/material";
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { LoginResponse } from "../api/types";
 
 export const Navbar: React.FC = () => {
   const [loggedIn, setLoggedIn] = useState(true);
+  const navigate = useNavigate();
+
+  const storedData = localStorage.getItem("userInfo");
+
+  if (!storedData) {
+    alert("Data in local storage not found.");
+    return null;
+  }
+
+  const userInfo: LoginResponse = JSON.parse(storedData);
 
   return (
     <Box display="flex" justifyContent="flex-end">
-      <NavLink to={"/login"} style={{ textDecoration: "none" }}>
-        <Toolbar>
-          <Button
-            onClick={() => {
-              setLoggedIn(false);
-              localStorage.clear();
-            }}
-            variant="contained"
-            color="primary"
-          >
-            Log Out
-          </Button>
-        </Toolbar>
-      </NavLink>
+      <Toolbar>
+        <Typography
+          sx={{ marginRight: 5 }}
+        >{`${userInfo.user.username} (${userInfo.user.email})`}</Typography>
+        <Button
+          onClick={() => {
+            setLoggedIn(false);
+            localStorage.removeItem("userInfo");
+            navigate("/login");
+          }}
+          variant="contained"
+          color="primary"
+        >
+          Log Out
+        </Button>
+      </Toolbar>
     </Box>
   );
 };

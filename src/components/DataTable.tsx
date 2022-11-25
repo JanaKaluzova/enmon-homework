@@ -3,7 +3,6 @@ import { Container } from "@mui/system";
 import {
   DataGrid,
   GridActionsCellItem,
-  GridColDef,
   GridColumns,
   GridSortItem,
 } from "@mui/x-data-grid";
@@ -12,7 +11,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { LoginResponse, Meter } from "../api/types";
 import EditIcon from "@mui/icons-material/Edit";
 import { EditMeterModal, MeterSlim } from "./EditMeterModal";
-import { updateMetaProperty } from "typescript";
 
 const style = {
   position: "absolute" as "absolute",
