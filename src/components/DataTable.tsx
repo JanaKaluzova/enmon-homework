@@ -1,21 +1,71 @@
-import { Box } from "@mui/material";
+import { Box, Modal } from "@mui/material";
 import { Container } from "@mui/system";
-import { DataGrid, GridColDef, GridSortItem } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridActionsCellItem,
+  GridColDef,
+  GridColumns,
+  GridSortItem,
+} from "@mui/x-data-grid";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { LoginResponse, Meter } from "../api/types";
+import EditIcon from "@mui/icons-material/Edit";
+import { EditMeterModal, MeterSlim } from "./EditMeterModal";
+import { updateMetaProperty } from "typescript";
 
-const columns: GridColDef[] = [
-  { field: "id", headerName: "ID", width: 100 },
-  { field: "owner", headerName: "OWNER", width: 150 },
-  { field: "tenant", headerName: "TENANT", width: 150 },
-  { field: "serial_number", headerName: "SERIAL NUMBER", width: 150 },
-  { field: "meter_type", headerName: "METER TYPE", width: 150 },
-  { field: "monitored_entity", headerName: "MONITORED ENTITY", width: 180 },
-  { field: "accessibility", headerName: "ACCESSIBILITY", width: 150 },
-];
+const style = {
+  position: "absolute" as "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  bgcolor: "background.paper",
+  border: "2px solid #000",
+  boxShadow: 24,
+  p: 4,
+};
 
 export const DataTable: React.FC = () => {
+  const columns: GridColumns = [
+    { field: "id", headerName: "ID", width: 100 },
+    { field: "owner", headerName: "OWNER", width: 150 },
+    { field: "tenant", headerName: "TENANT", width: 150 },
+    {
+      field: "serial_number",
+      headerName: "SERIAL NUMBER",
+      width: 150,
+    },
+    { field: "meter_type", headerName: "METER TYPE", width: 150 },
+    {
+      field: "monitored_entity",
+      headerName: "MONITORED ENTITY",
+      width: 180,
+    },
+    {
+      field: "note",
+      headerName: "NOTE",
+      width: 150,
+    },
+    {
+      field: "actions",
+      type: "actions",
+      width: 80,
+
+      getActions: (params) => [
+        <GridActionsCellItem
+          icon={<EditIcon />}
+          label="Edit"
+          onClick={() => {
+            selectedID.current = Number(params.id);
+            handleOpen();
+          }}
+        />,
+      ],
+    },
+  ];
+
+  const selectedID = useRef<number | undefined>(undefined);
   const [tableData, setTableData] = useState<Meter[]>([]);
   const [pageState, setPageState] = useState({
     isLoading: false,
@@ -27,6 +77,10 @@ export const DataTable: React.FC = () => {
     field: "id",
     sort: "asc",
   });
+
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   const getTableData = async (
     page: number,
@@ -60,12 +114,56 @@ export const DataTable: React.FC = () => {
     }
   };
 
+  const updateMeter = async (id: number, meter: MeterSlim) => {
+    try {
+      const storedData = localStorage.getItem("userInfo");
+
+      if (!storedData) {
+        alert("Data in local storage not found.");
+        return;
+      }
+
+      const userInfo: LoginResponse = JSON.parse(storedData);
+
+      await axios.put<Meter>(
+        `https://tools.dev.enmon.tech/api/inventory-meters/${id}`,
+        meter,
+        {
+          headers: {
+            Authorization: `Bearer ${userInfo.jwt}`,
+          },
+        }
+      );
+    } catch (err) {
+      alert(err);
+    }
+  };
+
   useEffect(() => {
     getTableData(pageState.page, pageState.pageSize, sortState);
   }, [pageState.page, pageState.pageSize, sortState]);
 
+  const handleEditMeter = async (meter: MeterSlim) => {
+    if (selectedID.current) {
+      await updateMeter(selectedID.current, meter);
+
+      setOpen(false);
+      getTableData(pageState.page, pageState.pageSize, sortState);
+    }
+  };
+
   return (
     <Container sx={{ margin: 3 }}>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <EditMeterModal onEditMeter={handleEditMeter} />
+        </Box>
+      </Modal>
       <Box style={{ height: 700, width: "100%" }}>
         <DataGrid
           rows={tableData}
