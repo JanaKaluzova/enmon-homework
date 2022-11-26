@@ -2,7 +2,7 @@ import React from "react";
 import { DataTable } from "./DataTable";
 import { Navbar } from "./Navbar";
 
-const Dashboard: React.FC = () => {
+export const Dashboard: React.FC = () => {
   return (
     <>
       <Navbar />
@@ -10,5 +10,3 @@ const Dashboard: React.FC = () => {
     </>
   );
 };
-
-export default Dashboard;

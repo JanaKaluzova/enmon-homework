@@ -1,20 +1,16 @@
 import { Box, Button, Toolbar, Typography } from "@mui/material";
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
-import { LoginResponse } from "../api/types";
+import { useGetUserInfo } from "../hooks/useGetUserInfo";
+import { userInfoStorageKey } from "../utils/constants";
 
 export const Navbar: React.FC = () => {
-  const [loggedIn, setLoggedIn] = useState(true);
   const navigate = useNavigate();
+  const userInfo = useGetUserInfo();
 
-  const storedData = localStorage.getItem("userInfo");
-
-  if (!storedData) {
-    alert("Data in local storage not found.");
+  if (!userInfo) {
     return null;
   }
-
-  const userInfo: LoginResponse = JSON.parse(storedData);
 
   return (
     <Box display="flex" justifyContent="flex-end">
@@ -24,8 +20,7 @@ export const Navbar: React.FC = () => {
         >{`${userInfo.user.username} (${userInfo.user.email})`}</Typography>
         <Button
           onClick={() => {
-            setLoggedIn(false);
-            localStorage.removeItem("userInfo");
+            localStorage.removeItem(userInfoStorageKey);
             navigate("/login");
           }}
           variant="contained"

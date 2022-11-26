@@ -22,12 +22,12 @@ export const EditMeterModal: React.FC<Props> = ({ onEditMeter }) => {
     <div>
       <Box sx={{ display: "flex", justifyContent: "center" }}>
         <FormControl>
-          <Typography sx={{ padding: 2 }}>Edit the cell</Typography>
+          <Typography sx={{ padding: 2 }}>Edit meter</Typography>
           <TextField inputRef={ref} sx={{ height: 80 }}>
             Note
           </TextField>
           <Button variant="contained" type="submit" onClick={handleClick}>
-            Submit
+            Save
           </Button>
         </FormControl>
       </Box>

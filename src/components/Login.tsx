@@ -4,9 +4,11 @@ import axios from "axios";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { LoginResponse } from "../api/types";
+import { API_URL, userInfoStorageKey } from "../utils/constants";
 
-const Login: React.FC = () => {
+export const Login: React.FC = () => {
   let navigate = useNavigate();
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const data = new FormData(e.currentTarget);
@@ -15,14 +17,17 @@ const Login: React.FC = () => {
     const password = data.get("password");
 
     const loginResponse = await axios.post<LoginResponse>(
-      "https://tools.dev.enmon.tech/api/auth/local",
+      `${API_URL}/auth/local`,
       {
         identifier: email,
         password: password,
       }
     );
 
-    localStorage.setItem("userInfo", JSON.stringify(loginResponse.data));
+    localStorage.setItem(
+      userInfoStorageKey,
+      JSON.stringify(loginResponse.data)
+    );
 
     navigate("/");
   };
@@ -74,5 +79,3 @@ const Login: React.FC = () => {
     </Container>
   );
 };
-
-export default Login;

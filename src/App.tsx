@@ -1,9 +1,9 @@
 import React from "react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
-import Dashboard from "./components/Dashboard";
-import Login from "./components/Login";
 import { NoMatchPage } from "./components/NoMatchPage";
-import { ProtectedRoute } from "./utils/ProtectedRoute";
+import { ProtectedRoute } from "./auth/ProtectedRoute";
+import { Login } from "./components/Login";
+import { Dashboard } from "./components/Dashboard";
 
 function App() {
   return (

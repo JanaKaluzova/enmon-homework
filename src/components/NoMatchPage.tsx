@@ -2,8 +2,9 @@ import { Box } from "@mui/material";
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-export const NoMatchPage = () => {
-  let navigate = useNavigate();
+export const NoMatchPage: React.FC = () => {
+  const navigate = useNavigate();
+
   useEffect(() => {
     setTimeout(() => {
       navigate("/");

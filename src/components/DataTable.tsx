@@ -8,11 +8,13 @@ import {
 } from "@mui/x-data-grid";
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
-import { LoginResponse, Meter } from "../api/types";
+import { Meter } from "../api/types";
 import EditIcon from "@mui/icons-material/Edit";
 import { EditMeterModal, MeterSlim } from "./EditMeterModal";
+import { API_URL } from "../utils/constants";
+import { useGetUserInfo } from "../hooks/useGetUserInfo";
 
-const style = {
+const modalStyle = {
   position: "absolute" as "absolute",
   top: "50%",
   left: "50%",
@@ -34,7 +36,6 @@ export const DataTable: React.FC = () => {
       headerName: "SERIAL NUMBER",
       width: 150,
     },
-    { field: "meter_type", headerName: "METER TYPE", width: 150 },
     {
       field: "monitored_entity",
       headerName: "MONITORED ENTITY",
@@ -63,6 +64,7 @@ export const DataTable: React.FC = () => {
     },
   ];
 
+  const userInfo = useGetUserInfo();
   const selectedID = useRef<number | undefined>(undefined);
   const [tableData, setTableData] = useState<Meter[]>([]);
   const [pageState, setPageState] = useState({
@@ -77,8 +79,18 @@ export const DataTable: React.FC = () => {
   });
 
   const [open, setOpen] = useState(false);
+
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+
+  const handleEditMeter = async (meter: MeterSlim) => {
+    if (selectedID.current) {
+      await updateMeter(selectedID.current, meter);
+
+      setOpen(false);
+      getTableData(pageState.page, pageState.pageSize, sortState);
+    }
+  };
 
   const getTableData = async (
     page: number,
@@ -86,17 +98,11 @@ export const DataTable: React.FC = () => {
     sort: GridSortItem
   ) => {
     try {
-      const storedData = localStorage.getItem("userInfo");
-
-      if (!storedData) {
-        alert("Data in local storage not found.");
+      if (!userInfo) {
         return;
       }
-
-      const userInfo: LoginResponse = JSON.parse(storedData);
-
       const repsonse = await axios.get<Meter[]>(
-        `https://tools.dev.enmon.tech/api/inventory-meters?_start=${
+        `${API_URL}/inventory-meters?_start=${
           page * pageSize
         }&_limit=${pageSize}&_sort=${sort.field}:${sort.sort}`,
         {
@@ -114,24 +120,15 @@ export const DataTable: React.FC = () => {
 
   const updateMeter = async (id: number, meter: MeterSlim) => {
     try {
-      const storedData = localStorage.getItem("userInfo");
-
-      if (!storedData) {
-        alert("Data in local storage not found.");
+      if (!userInfo) {
         return;
       }
 
-      const userInfo: LoginResponse = JSON.parse(storedData);
-
-      await axios.put<Meter>(
-        `https://tools.dev.enmon.tech/api/inventory-meters/${id}`,
-        meter,
-        {
-          headers: {
-            Authorization: `Bearer ${userInfo.jwt}`,
-          },
-        }
-      );
+      await axios.put<Meter>(`${API_URL}/inventory-meters/${id}`, meter, {
+        headers: {
+          Authorization: `Bearer ${userInfo.jwt}`,
+        },
+      });
     } catch (err) {
       alert(err);
     }
@@ -141,15 +138,6 @@ export const DataTable: React.FC = () => {
     getTableData(pageState.page, pageState.pageSize, sortState);
   }, [pageState.page, pageState.pageSize, sortState]);
 
-  const handleEditMeter = async (meter: MeterSlim) => {
-    if (selectedID.current) {
-      await updateMeter(selectedID.current, meter);
-
-      setOpen(false);
-      getTableData(pageState.page, pageState.pageSize, sortState);
-    }
-  };
-
   return (
     <Container sx={{ margin: 3 }}>
       <Modal
@@ -158,7 +146,7 @@ export const DataTable: React.FC = () => {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box sx={style}>
+        <Box sx={modalStyle}>
           <EditMeterModal onEditMeter={handleEditMeter} />
         </Box>
       </Modal>
