@@ -1,4 +1,4 @@
-import { Box, Modal } from "@mui/material";
+import { Box, Modal, Typography } from "@mui/material";
 import { Container } from "@mui/system";
 import {
   DataGrid,
@@ -10,7 +10,7 @@ import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { Meter } from "../api/types";
 import EditIcon from "@mui/icons-material/Edit";
-import { EditMeterModal, MeterSlim } from "./EditMeterModal";
+import { EditMeterForm, MeterSlim } from "./EditMeterForm";
 import { API_URL } from "../utils/constants";
 import { useGetUserInfo } from "../hooks/useGetUserInfo";
 
@@ -21,7 +21,7 @@ const modalStyle = {
   transform: "translate(-50%, -50%)",
   width: 400,
   bgcolor: "background.paper",
-  border: "2px solid #000",
+
   boxShadow: 24,
   p: 4,
 };
@@ -138,6 +138,16 @@ export const DataTable: React.FC = () => {
     getTableData(pageState.page, pageState.pageSize, sortState);
   }, [pageState.page, pageState.pageSize, sortState]);
 
+  const initialData: MeterSlim = tableData.find(
+    (x) => x.id === selectedID.current
+  ) ?? {
+    monitored_entity: "",
+    note: "",
+    owner: "",
+    serial_number: "",
+    tenant: "",
+  };
+
   return (
     <Container sx={{ margin: 3 }}>
       <Modal
@@ -147,7 +157,14 @@ export const DataTable: React.FC = () => {
         aria-describedby="modal-modal-description"
       >
         <Box sx={modalStyle}>
-          <EditMeterModal onEditMeter={handleEditMeter} />
+          <Typography id="modal-modal-title" variant="h5" component="h2">
+            Edit meter
+          </Typography>
+          <EditMeterForm
+            onEditMeter={handleEditMeter}
+            initialValue={initialData}
+            onCancel={handleClose}
+          />
         </Box>
       </Modal>
       <Box style={{ height: 700, width: "100%" }}>
