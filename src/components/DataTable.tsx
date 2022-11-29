@@ -7,7 +7,7 @@ import {
   GridSortItem,
 } from "@mui/x-data-grid";
 import axios from "axios";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Meter } from "../api/types";
 import EditIcon from "@mui/icons-material/Edit";
 import { EditMeterForm, MeterSlim } from "./EditMeterForm";
@@ -73,7 +73,7 @@ export const DataTable: React.FC = () => {
     page: 0,
     pageSize: 10,
   });
-  const [sortState, setSortState] = useState<GridSortItem>({
+  const [sortState, setSortState] = useState<GridSortItem | undefined>({
     field: "id",
     sort: "asc",
   });
@@ -95,27 +95,26 @@ export const DataTable: React.FC = () => {
   const getTableData = async (
     page: number,
     pageSize: number,
-    sort: GridSortItem
+    sort: GridSortItem | undefined
   ) => {
-    try {
-      if (!userInfo) {
-        return;
-      }
-      const repsonse = await axios.get<Meter[]>(
-        `${API_URL}/inventory-meters?_start=${
-          page * pageSize
-        }&_limit=${pageSize}&_sort=${sort.field}:${sort.sort}`,
-        {
-          headers: {
-            Authorization: `Bearer ${userInfo.jwt}`,
-          },
-        }
-      );
-
-      setTableData(repsonse.data);
-    } catch (err) {
-      alert(err);
+    if (!userInfo) {
+      return;
     }
+
+    const sortParam = sort ? `&_sort=${sort.field}:${sort.sort}` : "";
+
+    const response = await axios.get<Meter[]>(
+      `${API_URL}/inventory-meters?_start=${
+        page * pageSize
+      }&_limit=${pageSize}${sortParam}`,
+      {
+        headers: {
+          Authorization: `Bearer ${userInfo.jwt}`,
+        },
+      }
+    );
+
+    setTableData(response.data);
   };
 
   const updateMeter = async (id: number, meter: MeterSlim) => {
