@@ -7,7 +7,7 @@ import {
   GridSortItem,
 } from "@mui/x-data-grid";
 import axios from "axios";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Meter } from "../api/types";
 import EditIcon from "@mui/icons-material/Edit";
 import { EditMeterForm, MeterSlim } from "./EditMeterForm";
@@ -28,28 +28,28 @@ const modalStyle = {
 
 export const DataTable: React.FC = () => {
   const columns: GridColumns = [
-    { field: "id", headerName: "ID", width: 100 },
-    { field: "owner", headerName: "OWNER", width: 150 },
-    { field: "tenant", headerName: "TENANT", width: 150 },
+    { field: "id", headerName: "ID", flex: 1 },
+    { field: "owner", headerName: "OWNER", flex: 1 },
+    { field: "tenant", headerName: "TENANT", flex: 1 },
     {
       field: "serial_number",
       headerName: "SERIAL NUMBER",
-      width: 150,
+      flex: 1,
     },
     {
       field: "monitored_entity",
       headerName: "MONITORED ENTITY",
-      width: 180,
+      flex: 1,
     },
     {
       field: "note",
       headerName: "NOTE",
-      width: 150,
+      flex: 1,
     },
     {
       field: "actions",
       type: "actions",
-      width: 80,
+      flex: 1,
 
       getActions: (params) => [
         <GridActionsCellItem
